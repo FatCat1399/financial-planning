@@ -1,4 +1,30 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>منصة التخطيط المالي | اختبار الاتصال V0.142</title><style>*{box-sizing:border-box}body{margin:0;background:#eef3f6;color:#142d43;font:16px Tahoma,Arial}header{background:#142d43;color:white;padding:24px}main{max-width:720px;margin:25px auto;padding:16px}section{background:white;border-radius:18px;padding:24px;box-shadow:0 8px 30px #142d4315}label{display:block;margin:18px 0 8px}input,button{font:inherit;padding:12px;border:1px solid #cbd5e1;border-radius:9px}input{width:100%;direction:ltr}button{cursor:pointer;background:#0061ff;color:white;margin:8px 0}button.secondary{background:white;color:#142d43}button:disabled{opacity:.45;cursor:default}p{line-height:1.8}#status{white-space:pre-wrap;overflow-wrap:anywhere;background:#edf5f6;padding:14px;border-radius:10px}small{color:#526779}</style></head><body><header><h2>منصة التخطيط المالي</h2>V0.142 — اختبار الاتصال السحابي</header><main><section><h2>Dropbox</h2><p>صفحة اختبار مستقلة، لا تحتوي على بيانات مالية. اختبار الكتابة يرفع ملفًا تجريبيًا فقط ثم يقرأه ويحذفه.</p><label for="key">App Key (اختياري)</label><input id="key" autocomplete="off" spellcheck="false"><small>يمكن حذف المفتاح أو تغييره في أي وقت.</small><p dir="ltr" style="overflow-wrap:anywhere">https://fatcat1399.github.io/financial-planning/</p><button id="save" class="secondary">حفظ المفتاح</button> <button id="connect">ربط Dropbox</button> <button id="test" class="secondary" disabled>اختبار قراءة المجلد</button> <button id="disconnect" class="secondary" disabled>قطع الاتصال</button><button id="writeTest" class="secondary" disabled>اختبار الرفع والتنزيل والحذف</button><p id="status" role="status" aria-live="polite">غير متصل</p><small>رمز الوصول مؤقت في الذاكرة فقط. إعادة تحميل الصفحة تتطلب اتصالًا جديدًا. لا توجد مزامنة للبيانات المالية أو نسخ احتياطية في هذه الصفحة.</small></section></main><script>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="referrer" content="no-referrer">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>منصة التخطيط المالي | اختبار الاتصال V0.153</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#eef3f6;color:#142d43;font:16px Tahoma,Arial}header{background:#142d43;color:white;padding:24px}main{max-width:720px;margin:25px auto;padding:16px}section{background:white;border-radius:18px;padding:24px;box-shadow:0 8px 30px #142d4315}label{display:block;margin:18px 0 8px}input,button{font:inherit;padding:12px;border:1px solid #cbd5e1;border-radius:9px}input{width:100%;direction:ltr}button{cursor:pointer;background:#0061ff;color:white;margin:8px 0}button.secondary{background:white;color:#142d43}button:disabled{opacity:.45;cursor:default}p{line-height:1.8}#status{white-space:pre-wrap;overflow-wrap:anywhere;background:#edf5f6;padding:14px;border-radius:10px}small{color:#526779}</style>
+</head>
+<body>
+<header>
+<h2>منصة التخطيط المالي</h2>V0.153 — اختبار الاتصال السحابي</header>
+<main>
+<section>
+<h2>Dropbox</h2>
+<p>صفحة اختبار مستقلة، لا تحتوي على بيانات مالية. يختبر التشفير وتعارض الإصدارات بملف وهمي مستقل ثم يحذفه. لا يقرأ بيانات الميزانية المحلية.</p>
+<label for="key">App Key (اختياري)</label>
+<input id="key" autocomplete="off" spellcheck="false">
+<small>يمكن حذف المفتاح أو تغييره في أي وقت.</small>
+<p dir="ltr" style="overflow-wrap:anywhere">https://fatcat1399.github.io/financial-planning/</p>
+<button id="save" class="secondary">حفظ المفتاح</button> <button id="connect">ربط Dropbox</button> <button id="test" class="secondary" disabled>اختبار قراءة المجلد</button> <button id="disconnect" class="secondary" disabled>قطع الاتصال</button>
+<button id="writeTest" class="secondary" disabled>اختبار المزامنة المشفرة والتعارض</button>
+<p id="status" role="status" aria-live="polite">غير متصل</p>
+<small>رمز الوصول مؤقت في الذاكرة فقط. إعادة تحميل الصفحة تتطلب اتصالًا جديدًا. لا توجد مزامنة للبيانات المالية أو نسخ احتياطية في هذه الصفحة.</small>
+</section>
+</main>
+<script>
 'use strict';
 const redirect='https://fatcat1399.github.io/financial-planning/', defaultKey='z9lakdirmqr9rq3', storageKey='finance141.appKey', pendingKey='finance141.pkce';
 const $=id=>document.getElementById(id);let token=null, busy=false;
@@ -13,17 +39,20 @@ $('connect').onclick=async()=>{try{if(location.origin+location.pathname!==redire
 async function callback(){const q=new URLSearchParams(location.search);if(!q.has('code')&&!q.has('error'))return;history.replaceState(null,'',location.pathname);busy=true;controls();try{const p=JSON.parse(sessionStorage.getItem(pendingKey)||'null');sessionStorage.removeItem(pendingKey);if(!p||q.get('state')!==p.state||Date.now()-p.created>600000||p.key!==stored())throw Error('جلسة المصادقة غير صالحة. أعد الاتصال.');if(q.has('error'))throw Error('لم تكتمل الموافقة على الاتصال.');const r=await fetch('https://api.dropboxapi.com/oauth2/token',{method:'POST',body:new URLSearchParams({code:q.get('code'),grant_type:'authorization_code',client_id:p.key,code_verifier:p.verifier,redirect_uri:redirect})});if(!r.ok)throw Error('تعذر استبدال رمز المصادقة ('+r.status+').');const j=await r.json();if(typeof j.access_token!=='string')throw Error('لم يصل رمز الوصول.');token=j.access_token;status('تم الاتصال. اضغط اختبار قراءة المجلد.')}catch(e){token=null;status(e.message)}finally{busy=false;controls()}}
 $('test').onclick=async()=>{busy=true;controls();try{const r=await fetch('https://api.dropboxapi.com/2/files/list_folder',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({path:'',limit:100})});if(!r.ok)throw Error('تعذر قراءة المجلد ('+r.status+').');const j=await r.json();status('نجح الاتصال وقراءة مجلد التطبيق. عدد العناصر في الصفحة الأولى: '+j.entries.length+'\nلم يتم رفع أو تعديل أي ملف.')}catch(e){status(e.message)}finally{busy=false;controls()}};
 $('disconnect').onclick=async()=>{const old=token;token=null;busy=true;controls();try{const r=await fetch('https://api.dropboxapi.com/2/auth/token/revoke',{method:'POST',headers:{Authorization:'Bearer '+old}});status(r.ok?'تم قطع الاتصال وإلغاء رمز الوصول.':'تم قطع الاتصال محليًا؛ تعذر تأكيد إلغاء الرمز لدى Dropbox.')}catch(e){status('تم قطع الاتصال محليًا؛ تعذر تأكيد إلغاء الرمز لدى Dropbox.')}finally{busy=false;controls()}};
+async function key144(pass,salt){if(!crypto.subtle)throw Error('يلزم اتصال HTTPS أو بيئة محلية آمنة');const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:600000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+const b144=a=>{let s='';for(let i=0;i<a.length;i+=8192)s+=String.fromCharCode(...a.subarray(i,i+8192));return btoa(s)},u144=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function encrypt144(data,pass){if(pass.length<12)throw Error('كلمة المرور يجب ألا تقل عن 12 حرفًا');const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),k=await key144(pass,salt);const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:new TextEncoder().encode('finance-v144')},k,new TextEncoder().encode(JSON.stringify(data)));return {format:'finance-v144',salt:b144(salt),iv:b144(iv),cipher:b144(new Uint8Array(cipher))}}
+async function decrypt144(x,pass){if(x?.format!=='finance-v144')throw Error('صيغة غير مدعومة');const salt=u144(x.salt),iv=u144(x.iv);if(salt.length!==16||iv.length!==12)throw Error('ملف غير صالح');const k=await key144(pass,salt);return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:new TextEncoder().encode('finance-v144')},k,u144(x.cipher))))}
+
 $('writeTest').onclick=async()=>{
- if(!token||busy)return;
- busy=true;controls();let uploaded=false,verified=false;const path='/finance-test-'+crypto.randomUUID()+'.json';const payload=JSON.stringify({test:true,nonce:random()});
- try{
- const up=await fetch('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{Authorization:'Bearer '+token,'Dropbox-API-Arg':JSON.stringify({path,mode:'add',autorename:false,mute:true}),'Content-Type':'application/octet-stream'},body:payload});
- if(!up.ok)throw Error('فشل الرفع ('+up.status+')');uploaded=true;
- const down=await fetch('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{Authorization:'Bearer '+token,'Dropbox-API-Arg':JSON.stringify({path})}});
- if(!down.ok)throw Error('فشل التنزيل ('+down.status+')');if(await down.text()!==payload)throw Error('البيانات المستعادة غير مطابقة');verified=true;
- }catch(e){status(e.message+'\n'+(uploaded?'تم رفع الملف التجريبي.':'لم يتأكد الرفع؛ تحقق من المجلد عند الحاجة.'))}
- finally{
- if(uploaded){try{const del=await fetch('https://api.dropboxapi.com/2/files/delete_v2',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({path})});if(!del.ok)throw Error('HTTP '+del.status);if(verified)status('نجح الرفع والتنزيل وتطابق المحتوى وحذف الملف التجريبي.');else status($('status').textContent+'\nتم حذف الملف التجريبي.')}catch(e){status($('status').textContent+'\nتعذر حذف الملف التجريبي: '+path+' ('+e.message+')')}}
- busy=false;controls();}
+ if(!token||busy)return;busy=true;controls();
+ const path='/finance-test-'+crypto.randomUUID()+'.json',pass=random(),data={test:true,amount:123,nonce:random()};let rev=null;const log=[];
+ const say=m=>{log.push(m);status(log.join('\n'))};
+ const upload=async(enc,mode)=>fetch('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{Authorization:'Bearer '+token,'Dropbox-API-Arg':JSON.stringify({path,mode,autorename:false,strict_conflict:true,mute:true}),'Content-Type':'application/octet-stream'},body:JSON.stringify(enc)});
+ const read=async()=>{const r=await fetch('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{Authorization:'Bearer '+token,'Dropbox-API-Arg':JSON.stringify({path})}});if(!r.ok)throw Error('فشل التنزيل '+r.status);return {rev:JSON.parse(r.headers.get('Dropbox-API-Result')).rev,enc:await r.json()}};
+ try{say('جارٍ التشفير والاختبار…');const enc=await encrypt144(data,pass);const up=await upload(enc,'add');if(!up.ok)throw Error('فشل الرفع '+up.status);rev=(await up.json()).rev;say('✓ رفع الملف المشفر');const first=await read();if(first.rev!==rev||JSON.stringify(first.enc)!==JSON.stringify(enc)||JSON.stringify(await decrypt144(first.enc,pass))!==JSON.stringify(data))throw Error('عدم تطابق النسخة');say('✓ التنزيل وفك التشفير والتطابق');let rejected=false;try{await decrypt144(first.enc,pass+'wrong')}catch(e){rejected=true}if(!rejected)throw Error('لم ترفض كلمة المرور الخاطئة');say('✓ رفض كلمة المرور الخاطئة');const next=await encrypt144({...data,amount:456},pass);const old=rev;const updated=await upload(next,{'.tag':'update',update:old});if(!updated.ok)throw Error('فشل التحديث '+updated.status);rev=(await updated.json()).rev;say('✓ تحديث بالإصدار الصحيح');const stale=await upload(enc,{'.tag':'update',update:old});if(stale.status!==409)throw Error('لم يرفض الإصدار القديم: '+stale.status);const after=await read();if(after.rev!==rev||JSON.stringify(after.enc)!==JSON.stringify(next))throw Error('تغير الملف بعد التعارض');say('✓ رفض الإصدار القديم وحماية النسخة الجديدة');}catch(e){say('فشل الاختبار: '+e.message)}finally{if(rev){try{const r=await fetch('https://api.dropboxapi.com/2/files/delete_v2',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({path})});if(!r.ok)throw Error(r.status);say('✓ حذف الملف التجريبي')}catch(e){say('تعذر حذف الملف التجريبي: '+path)}}else say('إن لم يتأكد الرفع، تحقق من وجود الملف: '+path);busy=false;controls()}
 };callback();
-</script></body></html>
+controls();
+</script>
+</body>
+</html>
