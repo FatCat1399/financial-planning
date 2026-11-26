@@ -2,7 +2,7 @@
 
 const scope = new URL(self.registration.scope);
 const prefix = 'finance-pwa:' + scope.href + ':';
-const cacheName = prefix + '0.201';
+const cacheName = prefix + 'shell-1';
 const indexUrl = new URL('index.html', scope).href;
 const files = [
   'manifest.webmanifest', 'icon-152.png', 'icon-167.png', 'icon-180.png',
@@ -27,18 +27,30 @@ self.addEventListener('activate', event => {
 });
 
 async function openIndex(request) {
-  const cached = await caches.match(indexUrl, {cacheName});
-  if (!cached) return fetch(request);
+  const cached = await caches.match(indexUrl, {cacheName}).catch(() => undefined);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 4000);
+  let response;
   try {
-    const response = await fetch(request, {signal: controller.signal});
-    return response.status >= 500 ? cached : response;
-  } catch {
-    return cached;
+    response = await fetch(request, {cache:'no-cache', signal:controller.signal});
+  } catch (error) {
+    if (cached) return cached;
+    throw error;
   } finally {
     clearTimeout(timeout);
   }
+  if (response.status >= 500 && cached) return cached;
+
+  const html = response.headers.get('content-type')?.toLowerCase().startsWith('text/html');
+  if (response.status === 200 && html && (response.url === scope.href || response.url === indexUrl)) {
+    try {
+      const cache = await caches.open(cacheName);
+      await cache.put(indexUrl, response.clone());
+    } catch {
+      // The online version stays usable when the browser cannot update its cache.
+    }
+  }
+  return response;
 }
 
 self.addEventListener('fetch', event => {
